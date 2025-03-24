@@ -1,0 +1,27 @@
+{
+  "sets": [
+    {
+      "id": 1,
+      "title": "Basic Kanji Reading",
+      "kanjiQuestions": [
+        { "id": 1, "kanji": "来月", "answer": "らいげつ" },
+        { "id": 2, "kanji": "七月", "answer": "しちがつ" },
+        { "id": 3, "kanji": "木よう日", "answer": "もくようび" },
+        { "id": 4, "kanji": "九時", "answer": "くじ" }
+      ],
+      "readingSection": {
+        "passage": [
+          "アパートの皆さんへ",
+          "来週の月曜日と火曜日の午前１０時から午後５時までエレベーターを使わないでください。階段を使ってください。"
+        ],
+        "question": "1. アパートの人は、来週の月曜日と火曜日には、外に出る時、どうしますか。",
+        "options": [
+          { "id": "a", "text": "来週の月曜日の午前１１時には、階段を使います。", "isCorrect": true },
+          { "id": "b", "text": "来週の月曜日の午後３時には、エレベーターを使います。", "isCorrect": false },
+          { "id": "c", "text": "来週の火曜日の午前１１時には、エレベーターを使います。", "isCorrect": false },
+          { "id": "d", "text": "来週の火曜日の午後３時には、階段を使いません。", "isCorrect": false }
+        ]
+      }
+    }
+  ]
+} 

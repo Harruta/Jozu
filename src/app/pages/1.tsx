@@ -1,22 +1,13 @@
 "use client"
 
 import { useState } from "react"
-
-const kanjiQuestions = [
-  { id: 1, kanji: "来月", answer: "らいげつ" },
-  { id: 2, kanji: "七月", answer: "しちがつ" },
-  { id: 3, kanji: "木よう日", answer: "もくようび" },
-  { id: 4, kanji: "九時", answer: "くじ" },
-]
-
-const readingOptions = [
-  { id: "a", text: "来週の月曜日の午前１１時には、階段を使います。", isCorrect: true },
-  { id: "b", text: "来週の月曜日の午後３時には、エレベーターを使います。", isCorrect: false },
-  { id: "c", text: "来週の火曜日の午前１１時には、エレベーターを使います。", isCorrect: false },
-  { id: "d", text: "来週の火曜日の午後３時には、階段を使いません。", isCorrect: false },
-]
+import questionSets from "@/data/japanese-questions.json"
 
 export default function JapaneseLeetCode() {
+  // We'll start with the first question set, but you can add logic to select different sets
+  const currentSet = questionSets.sets[0]
+  const { kanjiQuestions, readingSection } = currentSet
+  
   const [kanjiAnswers, setKanjiAnswers] = useState<{ [key: number]: string }>({})
   const [selectedReadingOption, setSelectedReadingOption] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -42,7 +33,7 @@ export default function JapaneseLeetCode() {
   const isKanjiCorrect = (id: number) =>
     submitted && kanjiAnswers[id] === kanjiQuestions.find((q) => q.id === id)?.answer
 
-  const isReadingCorrect = () => submitted && selectedReadingOption === readingOptions.find((o) => o.isCorrect)?.id
+  const isReadingCorrect = () => submitted && selectedReadingOption === readingSection.options.find((o) => o.isCorrect)?.id
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -87,17 +78,18 @@ export default function JapaneseLeetCode() {
           <h2 className="text-2xl font-semibold text-center mb-8">Reading</h2>
 
           <div className="bg-gray-900 p-6 rounded-lg mb-6 text-center">
-            <p className="mb-4">アパートの皆さんへ</p>
-            <p className="mb-4">
-              来週の月曜日と火曜日の午前１０時から午後５時までエレベーターを使わないでください。階段を使ってください。
-            </p>
+            {readingSection.passage.map((line, index) => (
+              <p key={index} className="mb-4">
+                {line}
+              </p>
+            ))}
           </div>
 
           <div className="text-center mb-6">
-            <h3 className="text-xl mb-4">1. アパートの人は、来週の月曜日と火曜日には、外に出る時、どうしますか。</h3>
+            <h3 className="text-xl mb-4">{readingSection.question}</h3>
 
             <div className="space-y-4 max-w-md mx-auto text-left">
-              {readingOptions.map((option) => (
+              {readingSection.options.map((option) => (
                 <div
                   key={option.id}
                   className={`p-3 border rounded cursor-pointer ${
@@ -123,7 +115,7 @@ export default function JapaneseLeetCode() {
               <p className={`mt-4 ${isReadingCorrect() ? "text-green-400" : "text-red-400"}`}>
                 {isReadingCorrect()
                   ? "Correct!"
-                  : `Incorrect. The correct answer is: ${readingOptions.find((o) => o.isCorrect)?.id}`}
+                  : `Incorrect. The correct answer is: ${readingSection.options.find((o) => o.isCorrect)?.id}`}
               </p>
             )}
           </div>
