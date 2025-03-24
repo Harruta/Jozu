@@ -2,101 +2,149 @@
 
 import { useState } from "react"
 
-const questions = [
+const kanjiQuestions = [
   { id: 1, kanji: "来月", answer: "らいげつ" },
   { id: 2, kanji: "七月", answer: "しちがつ" },
   { id: 3, kanji: "木よう日", answer: "もくようび" },
   { id: 4, kanji: "九時", answer: "くじ" },
 ]
 
-export default function JapaneseLeetCode() {
-  const [userAnswers, setUserAnswers] = useState<{ [key: number]: string }>({})
-  const [submitted, setSubmitted] = useState(false)
-  const [allCorrect, setAllCorrect] = useState(false)
+const readingOptions = [
+  { id: "a", text: "来週の月曜日の午前１１時には、階段を使います。", isCorrect: true },
+  { id: "b", text: "来週の月曜日の午後３時には、エレベーターを使います。", isCorrect: false },
+  { id: "c", text: "来週の火曜日の午前１１時には、エレベーターを使います。", isCorrect: false },
+  { id: "d", text: "来週の火曜日の午後３時には、階段を使いません。", isCorrect: false },
+]
 
-  const handleInputChange = (id: number, value: string) => {
-    setUserAnswers((prev) => ({ ...prev, [id]: value }))
+export default function JapaneseLeetCode() {
+  const [kanjiAnswers, setKanjiAnswers] = useState<{ [key: number]: string }>({})
+  const [selectedReadingOption, setSelectedReadingOption] = useState<string | null>(null)
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleKanjiInputChange = (id: number, value: string) => {
+    setKanjiAnswers((prev) => ({ ...prev, [id]: value }))
     if (submitted) {
       setSubmitted(false)
-      setAllCorrect(false)
+    }
+  }
+
+  const handleReadingOptionChange = (optionId: string) => {
+    setSelectedReadingOption(optionId)
+    if (submitted) {
+      setSubmitted(false)
     }
   }
 
   const handleSubmit = () => {
     setSubmitted(true)
-    const correct = questions.every((q) => userAnswers[q.id] === q.answer)
-    setAllCorrect(correct)
   }
 
-  const isCorrect = (id: number) => submitted && userAnswers[id] === questions.find((q) => q.id === id)?.answer
+  const isKanjiCorrect = (id: number) =>
+    submitted && kanjiAnswers[id] === kanjiQuestions.find((q) => q.id === id)?.answer
+
+  const isReadingCorrect = () => submitted && selectedReadingOption === readingOptions.find((o) => o.isCorrect)?.id
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900">Jōzu上手</h1>
-        </div>
-      </header>
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Left column: Answer inputs */}
-            <div className="md:w-1/2 bg-white shadow overflow-hidden sm:rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Your Answers</h2>
-              {questions.map((q) => (
-                <div key={q.id} className="mb-4">
-                  <label htmlFor={`answer-${q.id}`} className="block text-sm font-medium text-gray-700">
-                    Answer for Question {q.id}
-                  </label>
-                  <input
-                    type="text"
-                    id={`answer-${q.id}`}
-                    className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
-                      submitted
-                        ? isCorrect(q.id)
-                          ? "border-green-500 bg-green-50"
-                          : "border-red-500 bg-red-50"
-                        : "border-gray-300"
-                    }`}
-                    placeholder={`Enter answer for ${q.kanji}`}
-                    value={userAnswers[q.id] || ""}
-                    onChange={(e) => handleInputChange(q.id, e.target.value)}
-                  />
-                  {submitted && (
-                    <p className={`mt-1 text-sm ${isCorrect(q.id) ? "text-green-600" : "text-red-600"}`}>
-                      {isCorrect(q.id) ? "Correct!" : `Incorrect. The correct answer is: ${q.answer}`}
-                    </p>
-                  )}
-                </div>
-              ))}
-              <button
-                className="mt-4 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                onClick={handleSubmit}
-              >
-                {submitted ? "Resubmit Answers" : "Submit Answers"}
-              </button>
-              {allCorrect && (
-                <p className="mt-4 text-center text-lg font-semibold text-green-600">
-                  All your answers are correct! Great job!
-                </p>
-              )}
-            </div>
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-2xl mx-auto py-12 px-4">
+        <h1 className="text-3xl font-bold text-center mb-12">Japanese LeetCode</h1>
 
-            {/* Right column: Kanji questions */}
-            <div className="md:w-1/2 bg-white shadow overflow-hidden sm:rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Kanji Questions</h2>
-              <ul className="space-y-4">
-                {questions.map((q) => (
-                  <li key={q.id} className="border-b pb-2">
-                    <span className="font-medium">Question {q.id}:</span>
-                    <span className="ml-2 text-2xl">{q.kanji}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        {/* Kanji Questions Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold text-center mb-8">Kanji Questions</h2>
+
+          <div className="space-y-8">
+            {kanjiQuestions.map((q) => (
+              <div key={q.id} className="text-center">
+                <h3 className="text-xl mb-2">
+                  Q{q.id}: {q.kanji}
+                </h3>
+                <input
+                  type="text"
+                  className={`w-full max-w-md mx-auto p-2 rounded border ${
+                    submitted
+                      ? isKanjiCorrect(q.id)
+                        ? "border-green-500 bg-green-900"
+                        : "border-red-500 bg-red-900"
+                      : "border-gray-600 bg-gray-900"
+                  } text-center`}
+                  placeholder="Enter your answer"
+                  value={kanjiAnswers[q.id] || ""}
+                  onChange={(e) => handleKanjiInputChange(q.id, e.target.value)}
+                />
+                {submitted && (
+                  <p className={`mt-1 ${isKanjiCorrect(q.id) ? "text-green-400" : "text-red-400"}`}>
+                    {isKanjiCorrect(q.id) ? "Correct!" : `Incorrect. The correct answer is: ${q.answer}`}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
-      </main>
+
+        {/* Reading Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-semibold text-center mb-8">Reading</h2>
+
+          <div className="bg-gray-900 p-6 rounded-lg mb-6 text-center">
+            <p className="mb-4">アパートの皆さんへ</p>
+            <p className="mb-4">
+              来週の月曜日と火曜日の午前１０時から午後５時までエレベーターを使わないでください。階段を使ってください。
+            </p>
+          </div>
+
+          <div className="text-center mb-6">
+            <h3 className="text-xl mb-4">1. アパートの人は、来週の月曜日と火曜日には、外に出る時、どうしますか。</h3>
+
+            <div className="space-y-4 max-w-md mx-auto text-left">
+              {readingOptions.map((option) => (
+                <div
+                  key={option.id}
+                  className={`p-3 border rounded cursor-pointer ${
+                    selectedReadingOption === option.id ? "border-white bg-gray-800" : "border-gray-600"
+                  } ${
+                    submitted && option.id === selectedReadingOption
+                      ? option.isCorrect
+                        ? "border-green-500 bg-green-900"
+                        : "border-red-500 bg-red-900"
+                      : ""
+                  }`}
+                  onClick={() => handleReadingOptionChange(option.id)}
+                >
+                  <div className="flex items-start">
+                    <div className="mr-2 font-bold">{option.id}.</div>
+                    <div>{option.text}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {submitted && selectedReadingOption && (
+              <p className={`mt-4 ${isReadingCorrect() ? "text-green-400" : "text-red-400"}`}>
+                {isReadingCorrect()
+                  ? "Correct!"
+                  : `Incorrect. The correct answer is: ${readingOptions.find((o) => o.isCorrect)?.id}`}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="text-center">
+          <button
+            className="px-8 py-3 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition-colors"
+            onClick={handleSubmit}
+          >
+            {submitted ? "Resubmit Answers" : "Submit Answers"}
+          </button>
+
+          {submitted && isReadingCorrect() && kanjiQuestions.every((q) => isKanjiCorrect(q.id)) && (
+            <p className="mt-4 text-center text-lg font-semibold text-green-400">
+              All your answers are correct! Great job!
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
