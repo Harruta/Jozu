@@ -1,5 +1,5 @@
 import React from 'react'
-import Page from './pages/Hira-kata'
+import Page from './Hiragana/page'
 
 const page = () => {
   return (
