@@ -1,4 +1,4 @@
- "use client"
+"use client"
 
 import { useState } from "react"
 import questionSets from "@/data/Hiragana-and-Katakana.json"
@@ -23,6 +23,7 @@ export default function HiraganaQuiz() {
   
   const [hiraganaAnswers, setHiraganaAnswers] = useState<{ [key: number]: string }>({})
   const [submitted, setSubmitted] = useState(false)
+  const [isReversed, setIsReversed] = useState(false)
 
   const handleHiraganaInputChange = (id: number, value: string) => {
     setHiraganaAnswers((prev) => ({ ...prev, [id]: value }))
@@ -35,8 +36,17 @@ export default function HiraganaQuiz() {
     setSubmitted(true)
   }
 
+  const toggleMode = () => {
+    setIsReversed(!isReversed)
+    setHiraganaAnswers({})
+    setSubmitted(false)
+  }
+
   const isHiraganaAnswerCorrect = (id: number) => {
     const question = HiraganaScript.find(q => q.id === id)
+    if (isReversed) {
+      return submitted && question?.character === hiraganaAnswers[id]
+    }
     return submitted && question?.pronunciation.toLowerCase() === hiraganaAnswers[id]?.toLowerCase()
   }
 
@@ -53,13 +63,22 @@ export default function HiraganaQuiz() {
           </Link>
         </div>
 
+        <div className="text-center mb-8">
+          <button
+            onClick={toggleMode}
+            className="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+          >
+            {isReversed ? "Switch to Hiragana → Romaji" : "Switch to Romaji → Hiragana"}
+          </button>
+        </div>
+
         {/* Hiragana Section */}
         <div className="mb-12">
           <div className="space-y-8">
             {HiraganaScript.map((q) => (
               <div key={q.id} className="text-center">
                 <h3 className="text-xl mb-2">
-                  {q.character}
+                  {isReversed ? q.pronunciation : q.character}
                 </h3>
                 <div className="relative">
                   <input
@@ -71,7 +90,7 @@ export default function HiraganaQuiz() {
                           : "border-red-500 bg-red-900/20"
                         : "border-gray-600 bg-gray-900"
                     } text-center`}
-                    placeholder="Enter pronunciation"
+                    placeholder={isReversed ? "Enter hiragana character" : "Enter pronunciation"}
                     value={hiraganaAnswers[q.id] || ""}
                     onChange={(e) => handleHiraganaInputChange(q.id, e.target.value)}
                   />
@@ -81,7 +100,7 @@ export default function HiraganaQuiz() {
                         <span className="text-green-500">Correct!</span>
                       ) : (
                         <span className="text-red-500">
-                          Correct answer: {q.pronunciation}
+                          Correct answer: {isReversed ? q.character : q.pronunciation}
                         </span>
                       )}
                     </div>

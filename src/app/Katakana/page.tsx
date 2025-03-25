@@ -23,6 +23,7 @@ export default function KatakanaQuiz() {
   
   const [katakanaAnswers, setKatakanaAnswers] = useState<{ [key: number]: string }>({})
   const [submitted, setSubmitted] = useState(false)
+  const [isReversed, setIsReversed] = useState(false)
 
   const handleKatakanaInputChange = (id: number, value: string) => {
     setKatakanaAnswers((prev) => ({ ...prev, [id]: value }))
@@ -35,8 +36,17 @@ export default function KatakanaQuiz() {
     setSubmitted(true)
   }
 
+  const toggleMode = () => {
+    setIsReversed(!isReversed)
+    setKatakanaAnswers({})
+    setSubmitted(false)
+  }
+
   const isKatakanaAnswerCorrect = (id: number) => {
     const question = KatakanaScript.find(q => q.id === id)
+    if (isReversed) {
+      return submitted && question?.character === katakanaAnswers[id]
+    }
     return submitted && question?.pronunciation.toLowerCase() === katakanaAnswers[id]?.toLowerCase()
   }
 
@@ -53,13 +63,22 @@ export default function KatakanaQuiz() {
           </Link>
         </div>
 
+        <div className="text-center mb-8">
+          <button
+            onClick={toggleMode}
+            className="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+          >
+            {isReversed ? "Switch to Katakana → Romaji" : "Switch to Romaji → Katakana"}
+          </button>
+        </div>
+
         {/* Katakana Section */}
         <div className="mb-12">
           <div className="space-y-8">
             {KatakanaScript.map((q) => (
               <div key={q.id} className="text-center">
                 <h3 className="text-xl mb-2">
-                  {q.character}
+                  {isReversed ? q.pronunciation : q.character}
                 </h3>
                 <div className="relative">
                   <input
@@ -71,7 +90,7 @@ export default function KatakanaQuiz() {
                           : "border-red-500 bg-red-900/20"
                         : "border-gray-600 bg-gray-900"
                     } text-center`}
-                    placeholder="Enter pronunciation"
+                    placeholder={isReversed ? "Enter katakana character" : "Enter pronunciation"}
                     value={katakanaAnswers[q.id] || ""}
                     onChange={(e) => handleKatakanaInputChange(q.id, e.target.value)}
                   />
@@ -81,7 +100,7 @@ export default function KatakanaQuiz() {
                         <span className="text-green-500">Correct!</span>
                       ) : (
                         <span className="text-red-500">
-                          Correct answer: {q.pronunciation}
+                          Correct answer: {isReversed ? q.character : q.pronunciation}
                         </span>
                       )}
                     </div>
